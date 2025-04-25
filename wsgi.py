@@ -31,7 +31,7 @@ app.index_string = '''
 
 # pd.read_clipboard().to_pickle(open('./data.pickle', '+wb'))
 # data: pd.DataFrame = pd.read_pickle(open('./data.pickle', 'rb'))
-data = pd.read_excel(r"C:\Users\maxmc\Documents\Code\blog\data.xlsx", index_col=0).replace(np.nan, None)
+data = pd.read_excel(r"data.xlsx", index_col=0).replace(np.nan, None)
 
 strava_comp = lambda c: html.Iframe(
             src=f"assets/{c}Strava.html",
