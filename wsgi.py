@@ -5,7 +5,7 @@ import dash.dependencies as dd
 import pages.landing as landing
 import pages.blog as blog
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
+app = dash.Dash(__name__, title='MEC', external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -25,4 +25,5 @@ def display_page(pathname):
 server = app.server
 
 if __name__ == "__main__":
-    app.run_server(debug=True, host='0.0.0.0', port=5000)
+    # app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True)

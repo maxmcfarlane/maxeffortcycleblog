@@ -4,12 +4,14 @@ import numpy as np
 import io_
 from dash import html, dcc
 import dash_bootstrap_components as dbc
+import components as cpts
+from .landing import card_wrap
 
-app = dash.Dash(__name__,
-    external_stylesheets=[dbc.themes.BOOTSTRAP],
-    title="Bashed the Balkans"
-                )
-app.index_string = '''
+page = dash.Dash(__name__,
+                 external_stylesheets=[dbc.themes.BOOTSTRAP],
+                 title="Bashed the Balkans"
+                 )
+page.index_string = '''
 <!DOCTYPE html>
 <html>
     <head>
@@ -36,22 +38,22 @@ strava_comp = lambda c: html.Iframe(
             src=f"assets/{c}Strava.html",
             style={
                 "width": "100%",
-                "height": "550px",
+                "height": "900px",
                 "border": "none",
                 "overflow": "hidden"
             }
         )
+
+strava_width = 3
 tab1_content = lambda n, c: html.Div([
     dbc.Row([
         dbc.Col([
-            strava_comp(c) if n.get('strava_embed') else None,
-        ], xs=12, sm=12, md=4, lg=4, xl=4),
+            strava_comp(c),
+        ], xs=12, sm=12, md=strava_width, lg=strava_width, xl=strava_width),
         dbc.Col([
-            dbc.Card([
-                dbc.CardHeader(
-                    html.P(n.get('title'), className="card-text") if n.get('title') else html.P(f'Navigating {c}', className="card-text")
-                ),
-                dbc.CardBody([
+            card_wrap(
+                html.P(n.get('title'), className="card-text") if n.get('title') else html.P(f'Navigating {c}', className="card-text"),
+                [
                     dcc.Markdown(n.get('content_markdown'), className="card-text") if n.get('content_markdown') else html.P(n.get('content'), className="card-text"),
 
                     html.Img(
@@ -66,41 +68,34 @@ tab1_content = lambda n, c: html.Div([
                             html.Source(src=n.get('vid_src'), type="video/mp4")
                         ]
                     ) if n.get('vid_src') else None,
-                ])
-            ], className="mt-3")
-        ], xs=12, sm=12, md=8, lg=8, xl=8),
+                ], None
+            )
+        ], xs=12, sm=12, md=12-strava_width, lg=12-strava_width, xl=12-strava_width),
     ])
-], style={"width": "100%", "height": "100%"})
+], style={"width": "100%", "height": "100%", "margin-top": "0.5rem"})
 
 tabs = dbc.Tabs([
             dbc.Tab(
                 tab1_content(data.to_dict()[c], c),
-                label=c) for c in data.columns
+                label=c,
+                label_style={'color': 'black'}
+            ) for c in data.columns
         ]
 )
 
-app.layout = html.Div(
-    style={'maxWidth': '100%', 'margin': 'auto', 'padding': '20px', 'fontFamily': 'Arial'},
-    children=[
-        html.H1("Bashed the Balkans", style={'textAlign': 'center'}),
-        dbc.Tab(
-            dbc.Container(
-                dbc.Card(
-                    dbc.CardBody(
-                        html.A("📹 Watch the video on Google Drive",
-                               href="https://drive.google.com/file/d/1FviTwPUO8vtA5Pii6Ao2nLcoHxVnzWqa/view?usp=sharing",
-                               target="_blank",
-                               style={"textDecoration": "none", "fontWeight": "bold", "fontSize": "1.2rem"})
-                    ),
-                    className="mt-4 m-3"
-                )
-            )
-        ),
-        tabs
-    ]
-)
+body = [
+    tabs
+]
+background_url = "/assets/frame.jpg"
+style = {
+    'backgroundImage': f'url({background_url})',
+    'backgroundSize': 'cover',
+    'backgroundPosition': 'top center',
+    'backgroundRepeat': 'repeat-y',
 
-server = app.server
+}
+page.layout = cpts.wrap_layout(body, style=style)
+layout = page.layout
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    page.run(debug=True)
